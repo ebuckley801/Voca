@@ -1,17 +1,11 @@
-"use server"
-import React, { useCallback, useState } from 'react';
-import { OpenAI } from 'openai';
-import { createClient } from '@supabase/supabase-js';
-import ffmpeg from 'fluent-ffmpeg';
-import ffmpegStatic from 'ffmpeg-static';
+"use client"
 
-ffmpeg.setFfmpegPath(ffmpegStatic.path);
+import React, { useState, useCallback } from 'react';  // React core and hooks
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-const openai = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY, dangerouslyAllowBrowser: true });
 
 const AudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState(null);
@@ -25,11 +19,9 @@ const AudioRecorder = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       let options = { mimeType: 'audio/webm; codecs=opus' };
       const newMediaRecorder = new MediaRecorder(stream, options);
-
       newMediaRecorder.ondataavailable = (event) => {
         setAudioChunks(prevChunks => [...prevChunks, event.data]);
       };
-
       newMediaRecorder.start();
       setMediaRecorder(newMediaRecorder);
       setIsRecording(true);
@@ -42,11 +34,9 @@ const AudioRecorder = () => {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
       setIsRecording(false);
-
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
       setAudioBlob(blob);
-
-      const transcriptionResult = await sendAudioToOpenAI(blob);
+      const transcriptionResult = await sendAudioToServer(blob);
       setTranscription(transcriptionResult);
       console.log(transcriptionResult);
       const { data, error } = await supabase
@@ -60,6 +50,27 @@ const AudioRecorder = () => {
       }
     }
   }, [mediaRecorder, audioChunks]);
+
+  const sendAudioToServer = async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('file', audioBlob);
+
+    try {
+      const response = await fetch('../pages/api/processAudio', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const processedAudioBlob = await response.blob();
+        console.log(URL.createObjectURL(processedAudioBlob));
+      } else {
+        throw new Error('Failed to process audio');
+      }
+    } catch (error) {
+      console.error('Error sending audio to server:', error);
+    }
+  };
 
   return (
     <div>
@@ -78,75 +89,4 @@ const AudioRecorder = () => {
   );
 };
 
-const convertBlobToSupportedFormat = async (blob) => {
-  if (!ffmpeg.isLoaded()) await ffmpeg.load();
-  const data = new Uint8Array(await blob.arrayBuffer());
-  ffmpeg.FS('writeFile', 'input.webm', data);
-
-  // Convert to MP3
-  await ffmpeg.run('-i', 'input.webm', '-b:a', '192k', 'output.mp3');
-
-  const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
-  return new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
-};
-
-const sendAudioToOpenAI = async (audioBlob) => {
-  const formData = new FormData();
-  formData.append("file", audioBlob, "audio.mp3");
-  formData.append("model", "whisper-1"); // Add the model parameter here
-
-  try {
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`
-      },
-      body: formData
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error processing transcription:', error);
-    throw error;
-  }
-};
-
 export default AudioRecorder;
-
-// pages/api/processAudio.js
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-const ffmpeg = createFFmpeg({ log: true });
-
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    try {
-      // Ensure FFmpeg is loaded
-      if (!ffmpeg.isLoaded()) await ffmpeg.load();
-
-      // Assuming the audio file is sent as a binary in the request body
-      const audioData = req.body;
-      ffmpeg.FS('writeFile', 'input.webm', audioData);
-
-      // Convert to desired format, e.g., MP3
-      await ffmpeg.run('-i', 'input.webm', '-b:a', '192k', 'output.mp3');
-      const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
-
-      // Convert Uint8Array to Buffer for sending
-      const mp3Buffer = Buffer.from(mp3Data.buffer);
-
-      // Set appropriate headers and send the file
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.send(mp3Buffer);
-    } catch (error) {
-      console.error('Error processing audio:', error);
-      res.status(500).json({ error: 'Failed to process audio' });
-    }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
-}
