@@ -33,7 +33,7 @@ export const FetchConjugations = async (callback) => {
     }
   } catch (error) {
     console.error('Failed to fetch conjugations from OpenAI:', error);
-    callback(''); // Handle errors by calling back with empty string or appropriate error message
+    //callback(''); // Handle errors by calling back with empty string or appropriate error message
   }
 };
 export default FetchConjugations;
