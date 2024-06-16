@@ -1,113 +1,208 @@
-import Image from "next/image";
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/G3fiH9RxNNW
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
+import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
-export default function Home() {
+export default function Component() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div className="flex flex-col min-h-[100dvh]">
+      <header className="px-4 lg:px-6 h-14 flex items-center">
+        <Link href="#" className="flex items-center justify-center" prefetch={false}>
+          <VibrateIcon className="h-6 w-6" />
+          <span className="sr-only">Voca</span>
+        </Link>
+        <nav className="ml-auto flex gap-4 sm:gap-6">
+          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+            About
+          </Link>
+          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+            Pricing
+          </Link>
+          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
+            Contact
+          </Link>
+        </nav>
+      </header>
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-blue-500">
+                    Learn a new language with Voca
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Personalized lessons, progress tracking, and a diverse language catalog to help you become fluent.
+                  </p>
+                </div>
+                <Link
+                  href="#"
+                  className="inline-flex h-10 items-center justify-center rounded-md bg-blue-500 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-950 disabled:pointer-events-none disabled:opacity-50"
+                  prefetch={false}
+                >
+                  Start Learning
+                </Link>
+              </div>
+              <img
+                src="/placeholder.svg"
+                width="550"
+                height="550"
+                alt="Hero"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
+              />
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
+                  Key Features
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-blue-500">Learn with ease</h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Voca offers a range of features to help you learn a new language efficiently and effectively.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
+              <div className="flex flex-col justify-center space-y-4">
+                <ul className="grid gap-6">
+                  <li>
+                    <div className="grid gap-1">
+                      <h3 className="text-xl font-bold text-blue-500">Personalized Lessons</h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Tailored lessons based on your proficiency and learning style.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="grid gap-1">
+                      <h3 className="text-xl font-bold text-blue-500">Progress Tracking</h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Monitor your progress and see how you're improving over time.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <div className="grid gap-1">
+                      <h3 className="text-xl font-bold text-blue-500">Diverse Catalog</h3>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Choose from a wide range of languages to learn.
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <img
+                src="/placeholder.svg"
+                width="550"
+                height="310"
+                alt="Image"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
+              />
+            </div>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
+                  Testimonials
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-blue-500">What our users say</h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Hear from real people who have found success with Voca.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
+              <div className="flex flex-col justify-center space-y-4">
+                <Card>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage src="/placeholder-user.jpg" />
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h4 className="text-lg font-semibold text-blue-500">John Doe</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Software Engineer</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      "Voca has been a game-changer for me. The personalized\n lessons and progress tracking have helped
+                      me become\n fluent in Spanish in just a few months."
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="flex flex-col justify-center space-y-4">
+                <Card>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarImage src="/placeholder-user.jpg" />
+                        <AvatarFallback>JS</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h4 className="text-lg font-semibold text-blue-500">Jane Smith</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Marketing Manager</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      "I've tried many language learning apps, but Voca is by\n far the most effective. The diverse
+                      language catalog\n has allowed me to learn multiple languages with ease."
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+        <p className="text-xs text-gray-500 dark:text-gray-400">&copy; 2024 Voca. All rights reserved.</p>
+        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+          <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+            About
+          </Link>
+          <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+            Pricing
+          </Link>
+          <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+            Contact
+          </Link>
+        </nav>
+      </footer>
+    </div>
+  )
+}
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+function VibrateIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m2 8 2 2-2 2 2 2-2 2" />
+      <path d="m22 8-2 2 2 2-2 2 2 2" />
+      <rect width="8" height="14" x="8" y="5" rx="1" />
+    </svg>
+  )
 }
