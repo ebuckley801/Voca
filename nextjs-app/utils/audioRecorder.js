@@ -1,14 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { OpenAI } from 'openai';
+"use client"
+
+import React, { useState, useCallback } from 'react';  // React core and hooks
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-
 
 const AudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState(null);
@@ -20,14 +17,12 @@ const AudioRecorder = () => {
   const startRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const newMediaRecorder = new MediaRecorder(stream);
-
-      newMediaRecorder.start();
-
-      newMediaRecorder.addEventListener('dataavailable', (event) => {
+      let options = { mimeType: 'audio/webm; codecs=opus' };
+      const newMediaRecorder = new MediaRecorder(stream, options);
+      newMediaRecorder.ondataavailable = (event) => {
         setAudioChunks(prevChunks => [...prevChunks, event.data]);
-      });
-
+      };
+      newMediaRecorder.start();
       setMediaRecorder(newMediaRecorder);
       setIsRecording(true);
     } catch (err) {
@@ -35,48 +30,47 @@ const AudioRecorder = () => {
     }
   }, []);
 
-      
   const stopRecording = useCallback(async () => {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
       setIsRecording(false);
-  
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      setAudioBlob(audioBlob);
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const response = await fetch(audioUrl);
-      const audioBuffer = await response.arrayBuffer();
-      const base64Audio = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)));
-      const openAIResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "whisper-1",
-          audio: {
-            data: base64Audio,
-            format: "webm"
-          }
-        })
-      });
-      const transcriptionData = await openAIResponse.json();
-      setTranscription(transcriptionData.text);
-  
-      // Save transcription to Supabase
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      setAudioBlob(blob);
+      const transcriptionResult = await sendAudioToServer(blob);
+      setTranscription(transcriptionResult);
+      console.log(transcriptionResult);
       const { data, error } = await supabase
         .from('Language_Questions')
-        .insert([
-            {
-                Response: transcriptionData.text
-            }
-        ]);
-  
-      if (error) console.error('Error saving transcription:', error);
-      else console.log('Transcription saved:', data);
+        .insert([{ Response: transcriptionResult }]);
+
+      if (error) {
+        console.error('Error saving transcription:', error);
+      } else {
+        console.log('Transcription saved:', data);
+      }
     }
-  }, [mediaRecorder]);
+  }, [mediaRecorder, audioChunks]);
+
+  const sendAudioToServer = async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('file', audioBlob);
+
+    try {
+      const response = await fetch('../pages/api/processAudio', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const processedAudioBlob = await response.blob();
+        console.log(URL.createObjectURL(processedAudioBlob));
+      } else {
+        throw new Error('Failed to process audio');
+      }
+    } catch (error) {
+      console.error('Error sending audio to server:', error);
+    }
+  };
 
   return (
     <div>
@@ -89,7 +83,6 @@ const AudioRecorder = () => {
       {audioBlob && (
         <div>
           <audio src={URL.createObjectURL(audioBlob)} controls />
-          <p>Transcription: {transcription || 'Transcribing...'}</p>
         </div>
       )}
     </div>
