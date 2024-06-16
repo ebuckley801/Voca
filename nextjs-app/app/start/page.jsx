@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import React, { useState } from 'react';
 import { FetchConjugations } from '../../utils/prompter';
@@ -20,5 +21,19 @@ export default function Start() {
         </div>
       </div>
     </>
+=======
+import Link from 'next/link';
+
+export default function Start() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <h1 className="text-4xl font-bold">Welcome to the Start Page!</h1>
+      <Link href="/" passHref>
+        <button className="mt-4 ml-4 rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-700">
+          Go Back
+        </button>
+      </Link>
+    </div>
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
   );
 }

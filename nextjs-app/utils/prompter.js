@@ -2,12 +2,15 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { OpenAI } from 'openai';
 //import { createClient } from '@supabase/supabase-js';
 // const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 // const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // const supabase = createClient(supabaseUrl, supabaseAnonKey);
 =======
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
@@ -22,6 +25,9 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
@@ -34,6 +40,10 @@ const openai = new OpenAI({
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
@@ -52,6 +62,7 @@ export const FetchConjugations = async (callback) => {
       max_tokens: 100
     });
     console.log("API Response:", completion); // Log the full API response
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -80,6 +91,8 @@ export default FetchConjugations;
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
     console.log("Choices[0]:", completion.choices[0]); // Log the first choice to see its contents
 
     if (completion.choices && completion.choices.length > 0 && completion.choices[0].text) {
@@ -98,6 +111,9 @@ export default FetchConjugations;
 export default FetchConjugations;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd

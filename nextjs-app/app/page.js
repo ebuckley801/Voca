@@ -34,7 +34,10 @@ export default function Component() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
@@ -105,6 +108,7 @@ export default function Component() {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         <section className="w-full py-6 md:py-12 lg:py-16 bg-blue-100">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -134,6 +138,8 @@ export default function Component() {
             </div>
           </div>
         </section>
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
 >>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
 =======
