@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { FetchConjugations } from '../../utils/prompter';
+import AudioRecorder from '@/utils/audioRecorder';
 export default function Start() {
   const [conjugationText, setConjugationText] = useState('');
   const handleFetchConjugations = () => {
@@ -15,6 +16,7 @@ export default function Start() {
             <button onClick={handleFetchConjugations} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
               Load Conjugations
             </button>
+            <AudioRecorder />
             <p style={{color: 'black'}}>{conjugationText}</p>
           </div>
         </div>
