@@ -31,6 +31,19 @@ export default function Component() {
             </div>
           </div>
         </section>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+      
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
         <section className="w-full py-6 md:py-12 lg:py-16 bg-blue-100">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -92,6 +105,47 @@ export default function Component() {
             </div>
           </div>
         </section>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <section className="w-full py-6 md:py-12 lg:py-16 bg-blue-100">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-blue-500">
+                Before You Begin
+                </h2>
+                <p className="max-w-full text-gray-500 md:text-xl dark:text-gray-400">
+               </p>
+             </div>
+           </div>
+           <div className="mx-auto grid max-w-full items-center gap-6 py-12 lg:grid-cols-1 lg:gap-12">
+             <div className="flex flex-col justify-center space-y-4">
+               <ul className="grid gap-6">
+                 <li className="bg-light-blue-100">
+                   <div className="grid gap-1 bg-light-blue-100">
+                     <h3 className="text-xl font-bold text-blue-500 bg-light-blue-100">Turn up your volume and microphone</h3>
+                   </div>
+                 </li>
+                 <li className="bg-light-blue-100">
+                   <div className="grid gap-1 bg-light-blue-100">
+                     <h3 className="text-xl font-bold text-blue-500 bg-light-blue-100">Make sure you have a stable internet connection</h3>
+                   </div>
+                 </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
+=======
+>>>>>>> 2969568b5f655a0ea1c3eb449938cd517accc0dd
         <section className="w-full py-6 md:py-12 lg:py-16 bg-white">
           <div className="container px-4 md:px-6 mx-auto flex justify-center">
             <Link
