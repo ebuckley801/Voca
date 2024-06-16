@@ -2,17 +2,20 @@ import React, { useCallback, useState } from 'react';
 import { OpenAI } from 'openai';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+
 
 const AudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [transcription, setTranscription] = useState('');
+  const [audioChunks, setAudioChunks] = useState([]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -21,9 +24,8 @@ const AudioRecorder = () => {
 
       newMediaRecorder.start();
 
-      const audioChunks = [];
       newMediaRecorder.addEventListener('dataavailable', (event) => {
-        audioChunks.push(event.data);
+        setAudioChunks(prevChunks => [...prevChunks, event.data]);
       });
 
       setMediaRecorder(newMediaRecorder);
@@ -33,16 +35,12 @@ const AudioRecorder = () => {
     }
   }, []);
 
+      
   const stopRecording = useCallback(async () => {
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
       setIsRecording(false);
-
-      const audioChunks = [];
-      mediaRecorder.addEventListener('dataavailable', (event) => {
-        audioChunks.push(event.data);
-      });
-
+  
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       setAudioBlob(audioBlob);
       const audioUrl = URL.createObjectURL(audioBlob);
@@ -65,14 +63,16 @@ const AudioRecorder = () => {
       });
       const transcriptionData = await openAIResponse.json();
       setTranscription(transcriptionData.text);
-
+  
       // Save transcription to Supabase
       const { data, error } = await supabase
-        .from('transcriptions')
+        .from('Language_Questions')
         .insert([
-          { transcription: transcriptionData.text }
+            {
+                Response: transcriptionData.text
+            }
         ]);
-
+  
       if (error) console.error('Error saving transcription:', error);
       else console.log('Transcription saved:', data);
     }
