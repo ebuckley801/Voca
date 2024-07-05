@@ -1,92 +1,55 @@
 "use client"
 
-import React, { useState, useCallback } from 'react';  // React core and hooks
-import { createClient } from '@supabase/supabase-js';
+import React, { useState, useRef } from 'react';  // React core and hooks
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const audioRecorder = () => {
+    const [isRecording, setIsRecording] = useState(false);
+    const [audioUrl, setAudioUrl] = useState(null);
+    const mediaRecorderRef = useRef(null);
+    const audioChunksRef = useRef([]);
 
-const AudioRecorder = () => {
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [transcription, setTranscription] = useState('');
-  const [audioChunks, setAudioChunks] = useState([]);
+    const toggleRecording = async () => {
+        if (isRecording) {
+            // Stop recording
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                mediaRecorderRef.current.stop();
+                mediaRecorderRef.current.onstop = () => {
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    setAudioUrl(audioUrl);
+                    console.log('Recording stopped');
+                    audioChunksRef.current = [];
+                };
+            }
+            setIsRecording(false);
+        } else {
+            // Start recording
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorderRef.current = new MediaRecorder(stream);
+                audioChunksRef.current = [];
 
-  const startRecording = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      let options = { mimeType: 'audio/webm; codecs=opus' };
-      const newMediaRecorder = new MediaRecorder(stream, options);
-      newMediaRecorder.ondataavailable = (event) => {
-        setAudioChunks(prevChunks => [...prevChunks, event.data]);
-      };
-      newMediaRecorder.start();
-      setMediaRecorder(newMediaRecorder);
-      setIsRecording(true);
-    } catch (err) {
-      console.error('Error accessing media devices:', err);
-    }
-  }, []);
+                mediaRecorderRef.current.ondataavailable = (event) => {
+                    audioChunksRef.current.push(event.data);
+                };
 
-  const stopRecording = useCallback(async () => {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-      setIsRecording(false);
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      setAudioBlob(blob);
-      const transcriptionResult = await sendAudioToServer(blob);
-      setTranscription(transcriptionResult);
-      console.log(transcriptionResult);
-      const { data, error } = await supabase
-        .from('Language_Questions')
-        .insert([{ Response: transcriptionResult }]);
+                mediaRecorderRef.current.start();
+                console.log('Recording started');
+                setIsRecording(true);
+            } catch (error) {
+                console.error('Failed to start recording:', error);
+            }
+        }
+    };
 
-      if (error) {
-        console.error('Error saving transcription:', error);
-      } else {
-        console.log('Transcription saved:', data);
-      }
-    }
-  }, [mediaRecorder, audioChunks]);
-
-  const sendAudioToServer = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('file', audioBlob);
-
-    try {
-      const response = await fetch('../pages/api/processAudio', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const processedAudioBlob = await response.blob();
-        console.log(URL.createObjectURL(processedAudioBlob));
-      } else {
-        throw new Error('Failed to process audio');
-      }
-    } catch (error) {
-      console.error('Error sending audio to server:', error);
-    }
-  };
-
-  return (
-    <div>
-      {!isRecording && (
-        <button onClick={startRecording}>Start Recording</button>
-      )}
-      {isRecording && (
-        <button onClick={stopRecording}>Stop Recording</button>
-      )}
-      {audioBlob && (
+    return (
         <div>
-          <audio src={URL.createObjectURL(audioBlob)} controls />
+            <button onClick={toggleRecording} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                {isRecording ? 'Stop Recording' : 'Start Recording'}
+            </button>
+            {audioUrl && <audio src={audioUrl} controls />}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
-export default AudioRecorder;
+export default audioRecorder;
