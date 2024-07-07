@@ -1,11 +1,14 @@
 "use client"
 
 import React, { useState, useCallback } from 'react';  // React core and hooks
-import { createClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const openai = new OpenAI({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+});
+
 
 const AudioRecorder = () => {
   const [audioBlob, setAudioBlob] = useState(null);
@@ -21,7 +24,8 @@ const AudioRecorder = () => {
       const newMediaRecorder = new MediaRecorder(stream, options);
       newMediaRecorder.ondataavailable = (event) => {
         setAudioChunks(prevChunks => [...prevChunks, event.data]);
-      };
+      }; 
+      console.log("Recording started");
       newMediaRecorder.start();
       setMediaRecorder(newMediaRecorder);
       setIsRecording(true);
@@ -39,36 +43,50 @@ const AudioRecorder = () => {
       const transcriptionResult = await sendAudioToServer(blob);
       setTranscription(transcriptionResult);
       console.log(transcriptionResult);
-      const { data, error } = await supabase
-        .from('Language_Questions')
-        .insert([{ Response: transcriptionResult }]);
-
-      if (error) {
-        console.error('Error saving transcription:', error);
-      } else {
-        console.log('Transcription saved:', data);
-      }
     }
   }, [mediaRecorder, audioChunks]);
 
+  // i know error happening here
   const sendAudioToServer = async (audioBlob) => {
+    console.log("Sending audio to server");
     const formData = new FormData();
-    formData.append('file', audioBlob);
-
+    formData.append('file', audioBlob, 'audio.webm');
+  
     try {
-      const response = await fetch('../pages/api/processAudio', {
+        // error is happening here, maybe missing file name
+        // could just have function that transcribes, don't even need to fetch
+      const response = await fetch('http://localhost:3000/api/processAudio', {
         method: 'POST',
         body: formData,
       });
-
-      if (response.ok) {
-        const processedAudioBlob = await response.blob();
-        console.log(URL.createObjectURL(processedAudioBlob));
-      } else {
-        throw new Error('Failed to process audio');
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
+  
+      const result = await response.json();
+      console.log('Transcription result:', result.transcription);
+      return result.transcription;
     } catch (error) {
       console.error('Error sending audio to server:', error);
+      return '';
+    }
+  };
+
+  const transcribeAudioWithOpenAI = async (audioBlob) => {
+    try {
+      const buffer = await audioBlob.arrayBuffer();
+      const response = await openai.createTranscription({
+        model: 'whisper-1',
+        file: buffer,
+        fileType: 'audio/webm',
+        language: 'it',
+      });
+      return response.data.transcription;
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      return '';
     }
   };
 

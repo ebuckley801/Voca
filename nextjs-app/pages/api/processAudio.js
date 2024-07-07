@@ -1,59 +1,34 @@
-import { createFFmpeg } from '@ffmpeg/ffmpeg';
-import { Configuration, OpenAIApi } from 'openai';
-import { createClient } from '@supabase/supabase-js';
-import multer from 'multer';
-import fs from 'fs';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import OpenAI from 'openai';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-const ffmpeg = createFFmpeg({ log: true });
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-const upload = multer({ storage: multer.memoryStorage() });
+// Initialize OpenAI client
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      if (!ffmpeg.isLoaded()) await ffmpeg.load();
-      const audioData = req.file.buffer;
-      ffmpeg.FS('writeFile', 'input.webm', audioData);
+      const ffmpeg = createFFmpeg({ log: true });
+      await ffmpeg.load();
+
+      const audioData = await req.arrayBuffer();
+      ffmpeg.FS('writeFile', 'input.webm', new Uint8Array(audioData));
       await ffmpeg.run('-i', 'input.webm', '-b:a', '192k', 'output.mp3');
       const mp3Data = ffmpeg.FS('readFile', 'output.mp3');
       const mp3Buffer = Buffer.from(mp3Data.buffer);
-      // Transcribe MP3 to text using OpenAI's Whisper
-      const transcriptionResponse = await openai.createTranscription({
+
+      // Transcribe using OpenAI
+      const transcription = await openai.audio.transcriptions.create({
+        file: new Blob([mp3Buffer], { type: 'audio/mpeg' }),
         model: "whisper-1",
-        file: Buffer.from(mp3Buffer),
+        language: "it"  // Specify Italian language
       });
 
-      // Convert transcription to JSON
-      const transcriptionJson = {
-        transcription: transcriptionResponse.data.text,
-        timestamp: new Date().toISOString()
-      };
-
-      //convert transcriptionJson to jsonstring
-      const transcriptionJsonString = JSON.stringify(transcriptionJson);
-
-      //write to json file
-      fs.writeFileSync('transcription.json', transcriptionJsonString);
-
-      // Insert transcription JSON into Supabase
-      const { data, error } = await supabase
-        .from('Language_Questions')
-        .insert([{ response: transcriptionJson }], { returning: 'minimal' });
-
-      if (error) throw error;
-
-      res.status(200).json({ message: 'Transcription saved successfully' });
+      res.status(200).json({ 
+        transcription: transcription.text
+      });
     } catch (error) {
       console.error('Error processing audio:', error);
-      res.status(500).json({ error: 'Failed to process audio' });
+      res.status(500).json({ error: error.message });
     }
   } else {
     res.setHeader('Allow', ['POST']);

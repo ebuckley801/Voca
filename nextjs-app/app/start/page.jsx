@@ -2,11 +2,48 @@
 import React, { useState } from 'react';
 import { FetchConjugations } from '../../utils/prompter';
 import AudioRecorder from '@/utils/audioRecorder';
+import OpenAI from 'openai';
+
+const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+
 export default function Start() {
   const [conjugationText, setConjugationText] = useState('');
-  const handleFetchConjugations = () => {
-    setConjugationText(FetchConjugations);  // Pass setConjugationText directly
+  const [transcriptionText, setTranscriptionText] = useState('');
+  const [audioFile, setAudioFile] = useState(null);
+
+  const handleFetchConjugations = async () => {
+    const result = await FetchConjugations();
+    setConjugationText(result);
   };
+
+  const handleTranscribe = async () => {
+    console.log('Starting transcription...');
+    if (!audioFile) {
+      console.error('No audio file selected');
+      return;
+    }
+
+    try {
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile, 
+        model: "whisper-1",
+      });
+
+      console.log('Transcription result:', transcription.text);
+      setTranscriptionText(transcription.text);
+    } catch (error) {
+      console.error('Error during transcription:', error);
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setAudioFile(file);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen bg-white">
@@ -17,7 +54,12 @@ export default function Start() {
               Load Conjugations
             </button>
             <AudioRecorder />
-            <p style={{color: 'black'}}>{conjugationText}</p>
+            <input type="file" accept=".flac,.m4a,.mp3,.mp4,.mpeg,.mpga,.oga,.ogg,.wav,.webm" onChange={handleFileChange} />
+            <button onClick={handleTranscribe} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+              Transcribe Audio
+            </button>
+            <p style={{ color: 'black' }}>{conjugationText}</p>
+            <p style={{ color: 'black' }}>{transcriptionText}</p>
           </div>
         </div>
       </div>
