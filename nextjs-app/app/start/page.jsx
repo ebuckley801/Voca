@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FetchConjugations } from '../../utils/prompter';
 import AudioRecorder from '@/utils/audioRecorder';
 import OpenAI from 'openai';
+import levenshtein from 'fast-levenshtein';
 
 const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 const openai = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
@@ -11,6 +12,7 @@ export default function Start() {
   const [conjugationText, setConjugationText] = useState('');
   const [transcriptionText, setTranscriptionText] = useState('');
   const [audioFile, setAudioFile] = useState(null);
+  const [comparisonResult, setComparisonResult] = useState('');
 
   const handleFetchConjugations = async () => {
     const result = await FetchConjugations();
@@ -33,9 +35,16 @@ export default function Start() {
 
       console.log('Transcription result:', transcription.text);
       setTranscriptionText(transcription.text);
+      compareTexts(conjugationText, transcription.text);
     } catch (error) {
       console.error('Error during transcription:', error);
     }
+  };
+
+  const compareTexts = (text1, text2) => {
+    const distance = levenshtein.get(text1, text2);
+    const similarity = 1 - distance / Math.max(text1.length, text2.length);
+    setComparisonResult(similarity > 0.8 ? 'Correct' : 'Incorrect');
   };
 
   const handleFileChange = (event) => {
@@ -65,6 +74,7 @@ export default function Start() {
             </button>
             <p style={{ color: 'black' }}>{conjugationText}</p>
             <p style={{ color: 'black' }}>{transcriptionText}</p>
+            <p style={{ color: comparisonResult === 'Correct' ? 'green' : 'red' }}>{comparisonResult}</p>
           </div>
         </div>
       </div>

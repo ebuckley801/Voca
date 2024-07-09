@@ -9,7 +9,7 @@ export const FetchConjugations = async (callback) => {
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [{role: "assistant", content: "List the conjugations of the verb 'to be' in Italian in the present tense."}],
+      messages: [{role: "assistant", content: "list the conjugation of a common italian verb in the present tense. only display the italian text."}],
       max_tokens: 100
     });
     console.log("API Response:", completion); // Log the full API response
